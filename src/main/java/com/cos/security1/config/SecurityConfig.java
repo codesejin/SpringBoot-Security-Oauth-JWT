@@ -58,6 +58,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //특정페이지를 요청해서 로그인하게 되면 그 페이지를 열어줄게!!! => 넘나 좋음
                 //예를 들어 user페이지로 검색후 loginForm에서 로그인시 유저페이지로 이동
                 //근데 admin페이지는 403에러
-                .defaultSuccessUrl("/");
+                .defaultSuccessUrl("/")
+                .and()
+                //.formLogin()이 되어있기 때문에 인증이 필요하면 무조건 .loginPage("/loginForm")로 가게 되어있음
+                .oauth2Login()
+                .loginPage("/loginForm");//구글로그인이 완료된 뒤 인증까지 됬지만 후처리가 필요함(세션등록)
     }
 }
