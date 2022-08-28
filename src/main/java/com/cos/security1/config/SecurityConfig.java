@@ -1,12 +1,13 @@
 package com.cos.security1.config;
 
 
+import com.cos.security1.oauth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity // 스프링 시큐리티 필터(SecurityConfig)가 스프링 필터체인에 등록된다
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
 
     //@Bean을 적으면 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다
     @Bean
@@ -62,6 +66,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //.formLogin()이 되어있기 때문에 인증이 필요하면 무조건 .loginPage("/loginForm")로 가게 되어있음
                 .oauth2Login()
-                .loginPage("/loginForm");//구글로그인이 완료된 뒤 인증까지 됬지만 후처리가 필요함(세션등록)
+                .loginPage("/loginForm")//구글로그인이 완료된 뒤 인증까지 됬지만 후처리가 필요함(세션등록)
+                // 1. 코드받기(인증됨-로그인됨-정상적인 사용자라는 의미)
+                // 2. 엑새스 토큰받기(구글로 로그인한 사용자의 정보에 접근할 수 있는 권한이 생김)
+                // 3. 사용자프로필 정보 가져오기
+                // 4-1. 그 정보를 토대로 회원가입을 자동으로 진행시키기도 함
+                // 4-2. 추가적인 정보가 필요할 경우 회원가입 자동으로 진행 X
+                // (구글에 있던 정보는 이메일,전화번호,이름,아이디 뿐) 쇼핑몰 -> (집주소) , 백화점몰 -> (vip등급, 일반등급)
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService);// 구글로그인 완료 후처리 Tip. 코드 X, (엑세스토큰 + 사용자프로필정보 O )
     }
 }
