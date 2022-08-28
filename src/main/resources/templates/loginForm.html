@@ -7,7 +7,8 @@
 <body>
 <h1>로그인 페이지</h1>
 <hr/>
-<form action="/loginForm" method="post">
+<!--시큐리티가 낚아채서 로그인대신해줌. 여기서 /login은 SecurityConfig파일 설정-->
+<form action="/login" method="post">
     <input type="text" name="username" placeholder="Username"/> <br/>
     <input type="password" name="password" placeholder="Password"/> <br/>
     <button>로그인</button>

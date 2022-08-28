@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.authorizeRequests()
                 //해당 엔드포인트를 들어가려면 인증이 필요하다 : 로그인 한사람만 들어올 수 있음
-                .antMatchers("/user/**").authenticated()
+                .antMatchers("/user/**").authenticated() // 인증만 되면 들어갈 수 있는 주소
                 //access권한 : 로그인했지만, admin이나 manager권한이 있어야 입장가능
                 .antMatchers("/manager/**")
                 .access("hasRole('ROLE_ADMIN')or hasRole('ROLE_MANAGER')")
@@ -36,10 +36,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //위에 3개가 아닌 이상 모든 권한이 해당됨
                 .anyRequest().permitAll()
                 //권한이 없을 경우, user,manager,admin페이지로 갈때 forbidden으로 막히지 않게
-                //login페이지로 이동 시킴(view 있을때 활용)
+                //loginPage함수로 login페이지로 이동 시킴(view 있을때 활용)
                 .and()
                 .formLogin()
-                .loginPage("/loginForm");
+                .loginPage("/loginForm")
+                // loginProcessingUrl함수로 /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해줍니다.
+                // controller /login을 만들어주지 않아도 됨
+                .loginProcessingUrl("/login")
 
+                //PrincipalDetailsService파일 내 loadUserByUsername의 파라미터를 변경하고 싶을 경우
+                //아래처럼 만들어라 -> 근데 바꾸지말고 username쓰는게 편하겠죠?
+                //.usernameParameter("username2")
+
+                // 로그인이 성공시 이동되는 url
+                // .loginPage("/loginForm")해당 페이지에서 로그인을 하면 /로 보내줄건데,
+                //특정페이지를 요청해서 로그인하게 되면 그 페이지를 열어줄게!!! => 넘나 좋음
+                //예를 들어 user페이지로 검색후 loginForm에서 로그인시 유저페이지로 이동
+                //근데 admin페이지는 403에러
+                .defaultSuccessUrl("/");
     }
 }
