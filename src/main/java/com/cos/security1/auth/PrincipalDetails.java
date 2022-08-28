@@ -10,17 +10,21 @@ package com.cos.security1.auth;
 // User오브젝트 타입 => UserDetails 타입 객체
 
 import com.cos.security1.model.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 // 시큐리티 세션에 세션정보를 저장해주는데, 여기에 들어갈 수 있는 객체가 Authentication 객체여야합
 // Authentication안에 들어갈 수 있는 유저정보는 UserDetails타입이어야한다
 // Security Session <- Authentication <- UserDetails(PrincipalDetails)
 
-public class PrincipalDetails implements UserDetails {
+@Data
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user; // 콤포지션
 
@@ -83,5 +87,14 @@ public class PrincipalDetails implements UserDetails {
         //user.getLogindate();
         // 현재시간 - 로그인시간 => 1년을 초과하면 return false;
         return true;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+    @Override
+    public String getName() {
+        return null;
     }
 }
